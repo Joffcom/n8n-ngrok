@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  n8n:
+    container_name: n8n
+    image: docker.n8n.io/n8nio/n8n
+    environment:
+      - WEBHOOK_URL=${URL}
+      - TZ=${TIMEZONE}
+      - GENERIC_TIMEZONE=${TIMEZONE}
+    networks:
+      - n8n-network
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  ngrok:
+    container_name: ngrok
+    image: ngrok/ngrok:latest
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_TOKEN}
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    networks:
+      - n8n-network
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+
+volumes:
+  n8n_data:
+
+networks:
+  n8n-network:
+    driver: bridge
